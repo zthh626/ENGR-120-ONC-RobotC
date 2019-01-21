@@ -1,3 +1,4 @@
+@@ -0,0 +1,223 @@
 #pragma config(I2C_Usage, I2C1, i2cSensors)
 #pragma config(Sensor, dgtl1,  button1,        sensorTouch)
 #pragma config(Sensor, dgtl2,  button2,        sensorTouch)
@@ -134,124 +135,66 @@ void exercise_2()
 
 void exercise_3()
 {
-	enum T_movement{
+
+	enum T_state{
 		off = 0,
 		forward,
-		backward
-		};
+		backward,
+	};
 
-resetMotorEncoder(motor1);
-T_movement movement = off;
+	T_state state = off;
 
 	while(true)
-	{
-	  monitorInput();
+		monitorInput();
 
-	switch(movement)
-{
-case off:
+		switch(state){
 
-motor[motor1] = 0;
-
-	if (button1_pushed) {
-		movement = forward;
-
-		button1_pushed = false;
-	}
-
-	if (button2_pushed) {
-		movement = backward;
-
-		button2_pushed = false;
-	}
-
-	if (x == 1) {
-		movement = backward;
-		button2_pushed = false;
-}
-
-	if (x ==2) {
-		movement = forward;
-		button1_pushed = false;
-	}
-break;
+		case off:
+			motor[motor1] = 0;
+			if(button1_pushed){
+				state = forward;
+				button1_pushed = false;
+			}
+			if(button2_pushed){
+				state = backward;
+				button2_pushed = false;
+			}
+			break;
 
 		case forward:
-
-	if (button1_pushed) {
-
-		resetMotorEncoder(motor1);
-
-		while( getMotorEncoder(motor1) < 3000)
-		{
-		motor[motor1] = -50;
-	if (button2_pushed){
-		x = 1;
-	}
-
-}
-
-	motor[motor1] = 0;
-	button1_pushed = false;
-}
-		if (x == 1){
-		movement = backward;
-		button2_pushed = false;
-		x = 0;
-	}
-
-	if(button1_pushed) {
-		break;
-	}
-
-		if (button2_pushed) {
-
-		movement = backward;
-
-		button2_pushed = false;
-	}
-	break;
+			if(button1_pushed){
+				resetMotorEncoder(motor1);
+				while(getMotorEncoder(motor1) < 3000){
+					motor[motor1] = -50;
+					if(button2_pushed){
+						button2_pushed = true;
+					}
+				}
+				motor[motor1] = 0;
+			}
+			break;
 
 		case backward:
-
-		if(button2_pushed) {
-		resetMotorEncoder(motor1);
-
-
-		while(-3000 < getMotorEncoder(motor1))
-		{
-			if (button1_pushed){
-				x = 2;
+			if(button2_pushed){
+				resetMotorEncoder(motor1);
+				while(-3000 < getMotorEncoder(motor1)){
+					motor[motor1] = 50;
+					if(button1_pushed){
+						button1_pushed = true;
+					}
+				}
+				motor[motor1] = 0;
 			}
-			motor[motor1] = 50;
-		}
-		motor[motor1] = 0;
-		button2_pushed = false;
-	}
-
-		if (button1_pushed) {
-			movement = forward;
-
-			button1_pushed = false;
-		}
-
-		if (button2_pushed) {
-
 			break;
-		}
 
-		if (x == 1) {
-			movement = forward;
-			button1_pushed = false;
-		}
-	break;
+		case plus:
+			break;
+
+		case minus:
+			break;
 
 	}
-
 }
-}
-
-
       /* INSERT CODE HERE
       * - make sure EXERCISE_NUMBER is set to 3
 		  */
