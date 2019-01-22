@@ -88,51 +88,43 @@ void exercise_2()
 		state3
 	};
 
+	//Initializes state to state1
 	T_test_state test_state = state1;
 
-  while(true)
-  {
-
-
+	//Starts loop to check for conditions
+  while(true){
+  	//Checks input
     monitorInput();
 
-    switch(test_state)
-    {
-
+		//Switch statement for different states
+    switch(test_state){
+    //Initial off case
     case state1:
+	    motor[motor1] = 0;
+		  if (button1_pushed) {
+		    test_state = state2;
+		    button1_pushed = false;
+		  }
+    	break;
 
-    motor[motor1] = 0;
-
-    	if (button1_pushed) {
-
-    	test_state = state2;
-
-    		button1_pushed = false;
-  }
-    break;
+    //Case for motor to run
     case state2:
+		  if (button1_pushed){
+		  	// Sets encoder to 0
+		    resetMotorEncoder(motor1);
+		    // Loop till reaches target ticks
+			  while( getMotorEncoder(motor1) < 627  ){
+			    motor[motor1] = -50;
+			  }
+			  //Turns motor off after reaching 627 ticks
+			  motor[motor1] = 0;
+			  button1_pushed = false;
+				}
+			break;
 
-    if (button1_pushed){
-
-    resetMotorEncoder(motor1);
-
-    while( getMotorEncoder(motor1) < 495  )
-    {
-    motor[motor1] = -50;
-  }
-  motor[motor1] = 0;
-  button1_pushed = false;
-}
-
-  }
-
-
-		  /* INSERT CODE HERE
-		  * - Make sure EXERCISE_NUMBER is set to 2
-		  */
-    }// end while
-
-} // end exercise_2
+  	}//switch
+	}//while
+}//exercise_2
 
 void exercise_3()
 {
@@ -222,9 +214,9 @@ void exercise_3()
 					resetMotorEncoder(motor1);
 				}
 				break;
-		}
-	}
-}
+		}//switcj
+	}//while
+}//exercise_3
 
 task main()
 {
