@@ -12,7 +12,7 @@
 bool button1_pushed; //flag to store button1 input
 bool button2_pushed; //flag to store button2 input
 int x;
-bool y;
+bool y = false;
 
 
 /* monitorInput()
@@ -143,39 +143,55 @@ void exercise_3()
 		backward,
 	};
 
+	//initilizes state to off
 	T_state state = off;
 
+	//starts loop to check for conditions
 	while(true){
+		//checks for input
 		monitorInput();
 
+		//switch statement for state
 		switch(state){
 
+			//initial case/ off state, when motor is not moving
 			case off:
+				//always has motor speed to 0 and encoder to 0 unless button is pressed
 				motor[motor1] = 0;
+				resetMotorEncoder(motor1);
+				//if button1 pressed state set to forward and button is reset
 				if(button1_pushed){
 					state = forward;
 					button1_pushed = false;
 				}
+				//if button2 pressed state set to forward and button is reset
 				if(button2_pushed){
 					state = backward;
 					button2_pushed = false;
 				}
 				break;
 
+			//case for when motor is forward state
 			case forward:
-
+				//button1 will always be ignored and if in forward state, will always be moving forward
+				button1_pushed = false;
 				motor[motor1] = -50;
-				y = false;
 
+				//when encoder is less than 3000 and button 2 is not pushed, it will check for if button 2 is pressed
 				if(getMotorEncoder(motor1) < 3000  && !y){
+					//if true, sets y boolean to true
 					if(button2_pushed){
 						y = true;
+						button2_pushed = false;
 					}
+				//if encoder is >= to 3000 and button 2 is not pressed, will work normally (terminate 3000)
 				}else if(getMotorEncoder(motor1) >= 3000 && !y){
-					resetMotorEncoder(motor1);
 					motor[motor1] = 0;
 					state = off;
-				} else if(getMotorEncoder(motor1) <= 3000 && y){
+					resetMotorEncoder(motor1);
+				//if encoder greater than 3000 and button 2 is pushed
+				} else if(getMotorEncoder(motor1) >= 3000 && y){
+					//sets y to false, state to backward, and resets encoder
 					y = false;
 					state = backward;
 					resetMotorEncoder(motor1);
@@ -183,18 +199,24 @@ void exercise_3()
 				break;
 
 			case backward:
+		  	//button2 will always be ignored and if in backward state, will always be moving backward
+				button2_pushed = false;
 				motor[motor1] = 50;
-				y = false;
 
+				//when encoder is more than -3000 and button 1 is not pushed, it will check for if button 1 is pressed
 				if(-3000 < getMotorEncoder(motor1)  && !y){
 					if(button1_pushed){
 						y = true;
+						button1_pushed = false;
 					}
+				//if encoder is < -3000 and button 1 is not pressed, will work normally (terminate -3000)
 				}else if(-3000 > getMotorEncoder(motor1) && !y){
-					resetMotorEncoder(motor1);
 					motor[motor1] = 0;
 					state = off;
-				} else if(-3000 < getMotorEncoder(motor1) && y){
+					resetMotorEncoder(motor1);
+				//if encoder less than -3000 and button 1 is pushed
+				} else if(-3000 > getMotorEncoder(motor1) && y){
+					//sets y to false, state to forward, and resets encoder
 					y = false;
 					state = forward;
 					resetMotorEncoder(motor1);
@@ -203,15 +225,6 @@ void exercise_3()
 		}
 	}
 }
-      /* INSERT CODE HERE
-      * - make sure EXERCISE_NUMBER is set to 3
-		  */
-
-
-  //end while
-
-//end exercse_3
-
 
 task main()
 {
