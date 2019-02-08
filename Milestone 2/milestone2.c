@@ -42,28 +42,32 @@ void straightOne(){
 
 void turner(){
 	if(direction == Left){
-		motor[motorSteer] = 30;
-		wait1Msec(1000);
+		while(SensorValue[motorSteer_angle] <= 1500){
+			motor[motorSteer] = 30;
+		}
 		motor[motorSteer] = 0;
 
 		motor[motorBackLeft] = 25;
 		motor[motorBackRight] = 50;
 		wait1Msec(1000);
 
-		motor[motorSteer] = -30;
-		wait1Msec(1000);
+		while(SensorValue[motorSteer_angle] >= 1500){
+			motor[motorSteer] = -30;
+		}
 		motor[motorSteer] = 0;
 	}else if(direction == Right){
-		motor[motorSteer] = -30;
-		wait1Msec(1000);
+		while(SensorValue[motorSteer_angle] >= 1500){
+			motor[motorSteer] = -30;
+		}
 		motor[motorSteer] = 0;
 
 		motor[motorBackLeft] = 25;
 		motor[motorBackRight] = 50;
 		wait1Msec(1000);
 
-		motor[motorSteer] = 30;
-		wait1Msec(1000);
+		while(SensorValue[motorSteer_angle] <= 1500){
+			motor[motorSteer] = 30;
+		}
 		motor[motorSteer] = 0;
 	}
 }
