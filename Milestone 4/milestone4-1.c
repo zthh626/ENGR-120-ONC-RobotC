@@ -247,11 +247,33 @@ bool determineTurn(){
 void changeDirection(){
 	while(!determineTurn() && !detect()){
 		turn();
-		if(direction == forward){
+		if(direction == Forward){
 			motor[right] = speed;
 			motor[left] = speed;
 		}
 	}
+}
+
+void disconnect(){
+	linearMotion();
+	motor[left] = -speed;
+	motor[right] = -speed;
+	wait10Msec(100);
+	direction = Right;
+	turn();
+	motor[left] = mstop;
+	motor[right] = mstop;
+	wait10Msec(50);
+	if(SensorValue[sonar] < 30){
+		motor[left] = -speed;
+		motor[right] = -speed;
+	}else {
+		motor[left] = speed;
+		motor[right] = speed;
+	}
+	wait10Msec(50);
+	motor[left] = mstop;
+	motor[right] = mstop;
 }
 
 task ledHz(){
@@ -282,9 +304,12 @@ task main(){
 	while(true){
 		if(isPushed()){
 			if(button1p == true){
+				changeDirection();
+				disconnect();
 				button1p = button2p = false;
 			}
 			else if(button2p == true){
+				disconnect();
 				button1p = button2p = false;
 			}
 		}
