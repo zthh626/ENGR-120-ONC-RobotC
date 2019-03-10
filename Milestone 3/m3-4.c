@@ -154,14 +154,13 @@ task main(){
 	while(true){
 		if(isPushed()){
 			if(button1p == true){
-				//test();
-				//correct();
-				wallDetect();
+				linearO = Down;
+				linearMotion();
 				button1p = button2p = false;
 			}
 			else if(button2p == true){
-				correct();
-				//linearMotion();
+				linearO = Up;
+				linearMotion();
 				button1p = button2p = false;
 			}
 		}
