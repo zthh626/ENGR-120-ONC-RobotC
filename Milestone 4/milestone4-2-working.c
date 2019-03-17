@@ -240,24 +240,20 @@ void disconnect(){
 	//reverses robot for a certain amount of time
 	motor[left] = -speed;
 	motor[right] = -speed;
-	wait10Msec(200);
+	wait10Msec(100);
 	//sets direction to turn right and turns
 	direction = Left;
 	turn();
 	//waits and then stops motors
 	wait10Msec(300);
 	direction = Forward;
-	int counter = 0;
-	while(counter < 200){
-		if(!detectWall()){
-			motor[left] = speed;
-			motor[right] = speed;
-		}else {
-			motor[left] = mstop;
-			motor[right] = mstop;
+	while(!wallDetection()){
+		motor[left] = speed;
+		motor[right] = speed;
+		if(time1[T2] == 200){
+			clearTimer(T2);
+			break;
 		}
-		wait1Msec(10);
-		counter += 1;
 	}
 	//waits and then stops motor
 	motor[left] = mstop;
