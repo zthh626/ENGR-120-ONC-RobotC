@@ -1,7 +1,7 @@
 #pragma config(I2C_Usage, I2C1, i2cSensors)
 #pragma config(Sensor, in1,    iFLeft,         sensorReflection)
 #pragma config(Sensor, in2,    iFRight,        sensorReflection)
-#pragma config(Sensor, dgtl6,  ir,             sensorDigitalOut)
+#pragma config(Sensor, dgtl7,  LED,            sensorDigitalOut)
 #pragma config(Sensor, dgtl8,  button2,        sensorTouch)
 #pragma config(Sensor, dgtl9,  button1,        sensorTouch)
 #pragma config(Sensor, dgtl11, sonar,          sensorSONAR_cm)
@@ -260,18 +260,31 @@ task main(){
 	linearO = Up;
 	SensorValue[linI2C] = 0;
 
+	//default LED off
+	SensorValue[LED] = 0;
+
 	while(true){
+		//checks for button push
 		if(isPushed()){
 			if(button1p == true){
 				while(!complete){
 
+					//determines which direction the robot needs to turn at
+					//	the beginning of every loop based on values of IR
 					determineTurn();
 
+					//finite state machine
 					switch(state){
 
+						//goes forward if direction = forward and detect is false
+						//	detect returns false when robot is more than distanceConnect
+						//	and wall detection is not true (robot is more than distanceWall and
+						//		both ir sensors dont break threshold).
+						// 	if the wall is detected state is set to WallDetect.
+						//	if detect is true, sets state to Disconnection.
 					case StraightForward:
 						if(!detect()){
-							if(WallDetection()){
+							if(wallDetection()){
 								state = WallDetect;
 								break;
 							}
@@ -283,9 +296,14 @@ task main(){
 						} else state = Disconnection;
 						break;
 
+						//turns in direction determined by determineTurn()
+						//	if direction != forward and detect is false
+						//	and wall detection is not true.
+						// 	if the wall is detected state is set to WallDetect.
+						//	if detect is true, sets state to Disconnection.
 					case Turn:
 						if(!detect()){
-							if(WallDetection()){
+							if(wallDetection()){
 								state = WallDetect;
 								break;
 							}
@@ -295,6 +313,9 @@ task main(){
 						}else state = Disconnection;
 						break;
 
+						//When wall is detected,
+						//	robot will revers, turn right, then stop, then direction is set to forward,
+						//	and state is set to Turn to begin scanning for beacon again
 					case WallDetect:
 						motor[left] = -speed;
 						motor[right] = -speed;
@@ -312,6 +333,11 @@ task main(){
 
 						break;
 
+						//When either the case Turn or StraightForward sets state to Disconnection,
+						//	the robot lifts the linear motion mechanism, which releases the cable,
+						//	reverses, turns left, and goes forward. If the robot detects a wall, the
+						//	robot stops. Then the robot  lowers the linear motion mechanism and sets the
+						//	state to CompleteState
 					case Disconnection:
 						//lowers linearmotion mechanism
 						linearMotion();
@@ -345,20 +371,25 @@ task main(){
 						state = CompleteState;
 						break;
 
+					//after disconnection the state is CompleteState, complete is set to  true
+					//	which breaks the while loop and sets LED to 1
 					case CompleteState:
 						complete = true;
+						SensorValue[LED] = 1;
 						break;
 					}
 
 				}
 
+				//after while loop is broken resets complete, state, and button  flags
 				complete = false;
-
+				state = Turn;
 				button1p = button2p = false;
 			}
 			else if(button2p == true){
 				//motor[linear] = -linSpeed;
 				linearMotion();
+				SensorValue[LED] = 0
 
 				button1p = button2p = false;
 			}

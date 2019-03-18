@@ -1,7 +1,7 @@
 #pragma config(I2C_Usage, I2C1, i2cSensors)
 #pragma config(Sensor, in1,    iFLeft,         sensorReflection)
 #pragma config(Sensor, in2,    iFRight,        sensorReflection)
-#pragma config(Sensor, dgtl6,  ir,             sensorDigitalOut)
+#pragma config(Sensor, dgtl7,  LED,            sensorDigitalOut)
 #pragma config(Sensor, dgtl8,  button2,        sensorTouch)
 #pragma config(Sensor, dgtl9,  button1,        sensorTouch)
 #pragma config(Sensor, dgtl11, sonar,          sensorSONAR_cm)
@@ -282,18 +282,22 @@ task main(){
 	linearO = Up;
 	SensorValue[linI2C] = 0;
 
+	SensorValue[LED] = 0;
+
 	while(true){
 		if(isPushed()){
 			if(button1p == true){
 				changeDirection();
 				disconnect();
 
+				SensorValue[LED] = 1;
 
 				button1p = button2p = false;
 			}
 			else if(button2p == true){
 				//motor[linear] = -linSpeed;
 				linearMotion();
+				SensorValue[LED] = 0;
 
 				button1p = button2p = false;
 			}
