@@ -67,7 +67,7 @@ void linearMotion(){
 		motor[linear] = -linSpeed;
 		//waits until I2C is less than -100
 		waitUntil(SensorValue[linI2C] >= 0);
-		//stop motor
+		//stop motor\
 		motor[linear] = mstop;
 		//sets to opposite direction
 		linearO = Up;
